@@ -9,16 +9,22 @@
 > or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 --]]
 
-function io.addresfunctions(tFunctions)
+local t_io = {
+	resFunctions = "", --[[these are generally called from the luax module 
+						but can be added to by calling io.addresfunctions
+						or by adding them here manually.]]
+};
 
-	if type(tFunctions) == "table" then
+function io.addresfunctions(t_functions)
+
+	if type(t_functions) == "table" then
 		
-		for nIndex, sResFunction in pairs(tFunctions) do
+		for nIndex, s_resFunction in pairs(t_functions) do
 			
-			if type(sResFunction) == "string" then
+			if type(s_resFunction) == "string" then
 							
-				if not table.find(tIO.ResFunctions, sResFunction) then
-				tIO.ResFunctions[#tIO.ResFunctions + 1] = sResFunction;
+				if not table.find(t_io.resFunctions, s_resFunction) then
+				t_io.resFunctions[#t_io.resFunctions + 1] = s_resFunction;
 				end
 				
 			end
@@ -30,61 +36,68 @@ function io.addresfunctions(tFunctions)
 end
 
 
+--[[ Checks whether or not the input script contains any
+restricted functions. if the script is NOT safe, this function
+return two values, false (boolean) and the name of the function (string) that is
+disallowed but present in the script.
+If the script is safe, this functions returns true boolean).
+]]
+function io.scriptissafe(p_file, t_resFunctionList)
+local s_script = "";
+local t_functions = luax.getRestrictedFunctions();
+local b_ok, h_file = pcall(io.open, p_file, "rb");
 
-function io.scriptissafe(pFile, tResFunctionList)
-local sScript = "";
-local tFunctions = LuaExt.GetRestrictedFunctions();
-local bOK, hFile = pcall(io.open, pFile, "rb");
-
-	if not bOK or not hFile then
+	if not b_ok or not h_file then
 	return false, "could not open file for reading"
 	end
 
-	sScript = hFile:read("*all");
+	s_script = h_file:read("*all");
 		
-	if type(tResFunctionList) == "table" then
-	tFunctions = tResFunctionList
+	if type(t_resFunctionList) == "table" then
+	t_functions = t_resFunctionList
 	end
 
-	for nIndex, sFunction in pairs(tFunctions) do
-	local nLastFound = 1;
+	for n_index, s_function in pairs(t_functions) do
+	local n_lastFound = 1;
 		
 		repeat
-		local nFound = string.find(sScript, sFunction, nLastFound);
+		local n_found = string.find(s_script, s_function, n_lastFound);
 			
-			if nFound then
-			nLastFound = nFound + 1;
-			local nLength = string.len(sFunction);
-			local nFailCount = 0;
-			local sBefore = string.sub(sScript, (nFound - 1), (nFound - 1));
-			local sAfter = string.sub(sScript, (nFound + nLength), (nFound + nLength));
+			if n_found then
+			n_lastFound = n_found + 1;
+			local n_length = string.len(s_function);
+			local n_failCount = 0;
+			local s_before = string.sub(s_script, (n_found - 1), (n_found - 1));
+			local s_after = string.sub(s_script, (n_found + n_length), (n_found + n_length));
 							
-				if not string.find(sBefore, '[_%a]') then
+				if not string.find(s_before, '[_%a]') then
 					
-					--if not string.find(sBefore, '_') then
-					nFailCount = nFailCount + 1;
+					--if not string.find(s_before, '_') then
+					n_failCount = n_failCount + 1;
 					--end
 					
 				end
 				
-				if not string.find(sAfter, '[_%a]') then
+				if not string.find(s_after, '[_%a]') then
 					
-					--if not string.find(sBefore, '_') then
-					nFailCount = nFailCount + 1;
+					--if not string.find(s_before, '_') then
+					n_failCount = n_failCount + 1;
 					--end
 								
 				end
 				
-				if nFailCount > 1 then				
-				return false, sFunction
+				if n_failCount > 1 then				
+				return false, s_function
 				end
 				
 			
 			end
 		
-		until not nFound
+		until not n_found
 			
 	end	
+	
+	h_file:close();
 
 return true
 end

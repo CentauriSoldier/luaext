@@ -1,5 +1,5 @@
 --[[
-> LuaExt
+> luax
 > Concept and Code By Centauri Soldier
 > http://www.github.com/CentauriSoldier/LuaPlugs
 > Version 0.3
@@ -8,14 +8,17 @@
 > To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/
 > or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 --]]
-LuaExt = {};
+luax = {};
 
 
-local tLuaExt = {
-	Author = "Centauri Soldier",
-	Libs = {"io","math","string", "table"},
-	License = "",
-	RestrictedFunctions = { --Functions that will be search for by the io.scriptissafe() function. You can toggle each of these by using comments.
+local t_luax = {
+	author = "Centauri Soldier",
+	libs = {"io","math","string", "table"},
+	license = "",
+	restrictedFunctions = { --[[these functions that will be searched
+								for by the io.scriptissafe() function.
+								You can toggle each of these by using comments.
+								]]
 		"assert",
 		"collectgarbage",
 		"dofile",
@@ -54,31 +57,35 @@ local tLuaExt = {
 		"coroutine",
 		"debug",
 		},
-	Path = "Plugins/luaext",
-	Version = "0.2.4"
+	path = "plugins/luax",
+	version = "0.2.5"
 };
 
 
+function luax.init(p_path)
+	
+	--[[
+	The path is set by luaplugs if called by it
+	or by the user if LuaEx	is being used by
+	itself, without luaplugs.
+	]]
+	if type(p_path) == "string" then
+	t_luax.path = p_path;
+	end
+	
+	for n_lib, s_lib in pairs(t_luax.libs) do
+	require(t_luax.path..".modules."..s_lib);	
+	end
 
-function LuaExt.GetRestrictedFunctions()
-return tLuaExt.RestrictedFunctions
+end
+
+
+function luax.getPath()
+return t_luax.restrictedFunctions
 end
 
 
 
-function LuaExt.Init(pPath)
-	
-	--[[
-	The path is set by LuaPlugs if called by it
-	or by the user in the table above if LuaEx
-	is being used by itself, without LuaPlugs.
-	]]
-	if type(pPath) == "string" then
-	tLuaExt.Path = pPath;
-	end
-	
-	for nLib, sLib in pairs(tLuaExt.Libs) do
-	require(tLuaExt.Path..".modules."..sLib);	
-	end
-
+function luax.getRestrictedFunctions()
+return t_luax.restrictedFunctions
 end
