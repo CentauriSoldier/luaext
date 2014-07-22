@@ -38,8 +38,8 @@ end
 
 --[[ Checks whether or not the input script contains any
 restricted functions. if the script is NOT safe, this function
-return two values, false (boolean) and the name of the function (string) that is
-disallowed but present in the script.
+return two values, false (boolean) and the name of the function
+(string) that is disallowed but present in the script.
 If the script is safe, this functions returns true boolean).
 ]]
 function io.scriptissafe(p_file, t_resFunctionList)
