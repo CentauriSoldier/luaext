@@ -61,78 +61,6 @@ local tEscapeChars = {
 };
 
 
-local function GetFunctionName(fFunc)
-
-	if type(fFunc) == "function" then
-
-		for vIndex, vItem in pairs(getfenv(fFunc)) do
-			
-			if vIndex ~= "_G" then
-			local sItemType = type(vItem);
-				
-				if sItemType == "function" then
-					
-					if vItem == fFunc then
-					return vIndex
-					end
-				
-				elseif sItemType == "table" then
-					
-					for vIndex2, vItem2 in pairs(vItem)	do
-					local sItemType2 = type(vItem2);
-		
-						if sItemType2 == "function" then
-					
-							if vItem2 == fFunc then
-							return vIndex.."."..vIndex2
-							end
-						
-						elseif sItemType2 == "table" then
-						
-							for vIndex3, vItem3 in pairs(vItem2) do
-							local sItemType3 = type(vItem3);
-				
-								if sItemType3 == "function" then
-							
-									if vItem3 == fFunc then
-									return vIndex.."."..vIndex2.."."..vIndex3
-									end
-								
-								elseif sItemType3 == "table" then
-						
-									for vIndex4, vItem4 in pairs(vItem3) do
-									local sItemType4 = type(vItem4);
-						
-										if sItemType4 == "function" then
-									
-											if vItem4 == fFunc then
-											return vIndex.."."..vIndex2.."."..vIndex3.."."..vIndex4
-											end
-																
-										end
-								
-									end			
-															
-								end
-								
-							end			
-								
-						end
-						
-					end
-					
-				end
-				
-			end
-		
-		end
-		
-	end
-	
-return ""
-end
-
-
 
 function table.copy(vInput)
 
@@ -184,7 +112,7 @@ local sOpenType = "w";
 end
 
 
-
+--MAKE THIS RECURSIV
 function table.find(tInput, vValue)
 	
 	if type(tInput) == "table" then
@@ -265,7 +193,7 @@ nCount = nCount + 1;
 			
 			
 			elseif sIndexType == "function" then
-			sRet = sRet..sIndexTab.."["..GetFunctionName(vIndex).."] = ";
+			sRet = sRet..sIndexTab.."["..string.getfuncname(vIndex).."] = ";
 			
 			
 			elseif sIndexType == "number" then
@@ -303,7 +231,7 @@ nCount = nCount + 1;
 			sRet = sRet..sIndex.."nil,\n";
 			
 			elseif sItemType == "function" then
-			sRet = sRet..sIndex..GetFunctionName(vItem)..",\n";
+			sRet = sRet..sIndex..string.getfuncname(vItem)..",\n";
 									
 			elseif sItemType == "userdata" then
 			sRet = sRet..sIndex.."\"_USERDATA_\",\n"
